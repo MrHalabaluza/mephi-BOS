@@ -1,83 +1,86 @@
 #!/bin/bash
 # На вход имя файла или директории. Скрипт должен быть запущен от рута, файл или директория должны существовать.
-echo "Changing the ownership and group of file."
-PS3="Enter our choice:"
-options=("Changing the ownership" "Changing the group" "Exit")
-choose=("To do it recursively" "To do it only for the directory")
+echo "Изменение владельца или группы файла."
+PS3="Выберите следующее действие:"
+options=("Изменение владельца" "Изменение группы" "Выход")
+choose=("Выполнить рекурсивно для директории" "Выполнить только для папки")
 select opt in "${options[@]}"
 do
 	case $opt in
-		"Changing the ownership")
-			echo "Enter the name of new ownership:"			
+		"Изменение владельца")
+			echo "Введите имя нового владельца:"			
 			read USERNAMEN
 			grep "$USERNAMEN:" /etc/passwd >/dev/null
 			if [ $? -ne 0 ]; then
-				echo "User is not exist!"
+				echo "Пользователь не существует!" >&2
 			else
 				 if [ -f $1 ]; then
 					 chown $USERNAMEN: $1
-					 echo "Ownership of the file  changed successfully!"
+					 echo "Влвделец файла изменен успешно!"
 				 elif [ -d $1 ]; then
-					 echo "Argument is a name of directory, choose your next step please"
+					 echo "Директория! Вберите следующее действие:"
 					 select ch in "${choose[@]}"
 					 do
 						 case $ch in
-							 "To do it recursively")
+							 "Выполнить рекурсивно для директории")
 								 chown -R $USERNAMEN: $1
-								 echo "Ownership changed recursively!Successful!"
+								 echo "Владелец изменен у каждого файла директории!"
 								 break
 								 ;;
-							 "To do it only for the directory")
+							 "Выполнить только для папки")
 								 chown $USERNAMEN: $1
-								  echo "Ownership of the directory changed successfully!"
+								  echo "Владелец папки изменен успешно!"
 								  break
 								  ;;
-							 *) echo "Wrong answer!" 
+							 *) echo "Некорректный ввод!" >&2
+								 ;;
 						 esac 
 					 done
 				 else
-					 echo "Wrong argument!"
+					 echo "Некорректный ввод!" >&2
 				 fi
 			 fi
 			 ;;
-		"Changing the group")
-			echo "Enter the group:"
+		"Изменение группы")
+			echo "Введите название группы:"
 			read NAMEGROUP
 			grep -q -E "^$NAMEGROUP:" /etc/group >/dev/null
 			if [ $? -ne 0 ];
 			then
-				echo "Group is not exist!"
+				echo "Группа не существует!" >&2
 			else
 				if [ -f $1 ]; then
 					chown :$NAMEGROUP $1
-					echo "Group of the file changed successfully!"
+					echo "Группа файла изменена успешно!"
 				elif [ -d $1 ]; then
-					echo "Argument is a name of directory, choose your next step please"
+					echo "Директория! Выполните следующее действие:"
 					select ch in "${choose[@]}";
 					do
 						case $ch in
-							"To do it recursively")
+							"Выполнить рекурсивно для директории")
 								chown -R :$NAMEGROUP $1
-								echo "Group changed recursively! Successful!"
+								echo "Группа директории изменена для каждого файла директории!!"
 								break
 								;;
-							"To do it only for the directory")
+							"Выполнить только для папки")
 								chown :$NAMEGROUP $1
-								echo "Group of the directory changed successfully!"
+								echo "Группа папки изменена успешно!"
 								break
 								;;
-							*) echo "Wrong answer!"
+							*) echo "Некорректный ввод!" >&2
+								;;
 						esac
 					done
 				else
-					echo "Wrong argument!"
+					echo "Некорректный ввод!" >&2
 				fi
 			fi
 			;;
-		"Exit")
+		"Выход")
 			break
 			;;
-		*) echo "Wrong answer. Try again!"
+		*) echo "Некорректный ввод!" >&2
+			;;
 	esac
 done
 
