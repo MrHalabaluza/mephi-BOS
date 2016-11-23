@@ -7,10 +7,10 @@ filename="$1" #может быть неправильно
 defineRights(){
 					echo "Установить права на чтение?(y/n)"
 					read ans
-					case "$ans1" in 
-						y|Y) r_right = 'r'
+					case "$ans" in 
+						y|Y) r_right='r'
 							;;
-						n|N) r_right = '-'
+						n|N) r_right='-'
 							;;
 						*) 
 						echo "Неверный ввод"
@@ -21,9 +21,9 @@ defineRights(){
 			echo "Установить права на запись?(y/n)"
 					read ans
 					case "$ans" in 
-						y|Y) w_right = 'w'
+						y|Y) w_right='w'
 							;;
-						n|N) w_right = '-'
+						n|N) w_right='-'
 							;;
 					*) 
 					echo "Неверный ввод"
@@ -34,22 +34,22 @@ defineRights(){
 			echo "Установить права на запуск?(y/n)"
 					read ans
 					case "$ans" in 
-						y|Y) x_right = 'x'
+						y|Y) x_right='x'
 							;;
-						n|N) x_right = '-'
+						n|N) x_right='-'
 							;;
 						*)
 							echo "Неверный ввод"
 							continue
 							;;
 					esac
-					rights ="$r_right$w_right$x_right"
+					rights="$r_right$w_right$x_right"
 }
 options=("Добавить запись" "Удалить запись" "Изменить запись" "Назад")
 select opt in "${options[@]}"
 do
-	case $opt in
-		"1")
+	case "$opt" in
+		${options[0]})
 			echo " Добавление записи"
 			echo "Пользователь или группа? (u/g)) "
 			read ans
@@ -70,7 +70,7 @@ do
 					;;
 			esac
 			;;
-		"2")
+		${options[1]})
 			echo "Удаление записи"
 			echo "Пользователь или группа? (u/g)) "
 			read ans
@@ -88,7 +88,7 @@ do
 					;;
 			esac
 			;;
-		"3")
+		${options[2]})
 			echo "Изменение записи"
 				echo "Пользователь или группа? (u/g)) "
 			read ans
@@ -110,7 +110,7 @@ do
 					;;
 			esac
 			;;
-		"4") 
+		${options[3]}) 
 			break
 			;;
 
