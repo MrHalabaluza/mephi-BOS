@@ -22,14 +22,16 @@ else
 	do
 		case "$REPLY" in
 			1)
+				ans="y"
 				f="true"
+
 				if [ -a "$1" ]&&[ $# == 1 ]; 
 				then
 					path="$1"
 				else
 					echo "Файл не указан либо неверное количество аргументов" >&2
 					echo "Введите путь до файла:"
-					while [ "$f" == "true" ];
+					while [ "$ans" == "y" ]&&[ "$f" == "true" ]
 					do
 						read -e path
 						if [ -a "$path" ]
@@ -37,39 +39,43 @@ else
 							f="false"	
 						else
 							echo "Указанный файл не существует" >&2
-							echo "Повторите ввод:"
+							echo "Повторить ввод?(y/n)"
+							read -e ans
 						fi
 					done
-				fi
 
-				option=("Изменить права доступа" "Изменить владельца и группу" "Изменить ACL права" "Вернуться")
-				select opt in "${option[@]}" 
-				do
-					case "$REPLY" in
-						1)
-							./change-mode.sh "$path"
-							;;
-						2)
-							./OwnershipANDGroup.sh "$path"
-							;;
-						3)
-							./ACL.sh "$path"
-							;;
-						4)	echo "1) Работа с файлом
+					if  [ "$ans" == "y" ]
+					then			
+						option=("Изменить права доступа" "Изменить владельца и группу" "Изменить ACL права" "Вернуться")
+						select opt in "${option[@]}" 
+						do
+							case "$REPLY" in
+								1)
+									./change-mode.sh "$path"
+									;;
+								2)
+									./OwnershipANDGroup.sh "$path"
+									;;
+								3)
+									./ACL.sh "$path"
+									;;
+								4)	echo "1) Работа с файлом
 2) Поиск файлов, доступных всем пользователям на запись
 3) Выход"
-							break
-							;;
-						"help")
-							echo "В данном меню выберете, что вы хотите изменить
+									break
+									;;
+								"help")
+									echo "В данном меню выберите, что вы хотите изменить
 1) Изменить права доступа	3) Изменить ACL права
 2) Изменить владельца и группу	4) Вернуться"
-							;;
-						*)
-							echo "Неверный ввод" >&2
-							;;
-					esac
-				done
+									;;
+								*)
+									echo "Неверный ввод" >&2
+									;;
+							esac
+						done
+					fi
+				fi
 				;;
 			2)
 				./FileSearch.sh
@@ -90,3 +96,7 @@ else
 		esac
 	done
 fi
+					
+					
+					
+
