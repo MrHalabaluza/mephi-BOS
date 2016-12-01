@@ -57,7 +57,12 @@ do
 				u|U) echo "Введите имя пользователя"
 					read username
 					defineRights
-					setfacl -m u:$username:$rights $filename
+					setfacl -m u:$username:$rights $filename > /dev/null
+					if [[ $? -eq 0 ]]; then
+                        echo "Success"
+                    else
+                        echo "Loh"
+                    fi
 					;;
 				g|G) echo "Введите имя группы"
 					read groupname
