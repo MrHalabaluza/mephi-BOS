@@ -17,9 +17,22 @@ do
 				then
 					echo "Пользователь не существует" >&2
 					echo "Повторить? (y/n)"
-					read ANSWER
+					while [ 1 ];
+					do
+						read ANSWER
+						if [ "$ANSWER" == "n" ];
+						then 
+							break
+						elif [ "$ANSWER" != "y" ];
+						then
+							echo "Не верный ввод, повторите"
+							echo "Ввести пользователя? (y/n)"
+						else 
+							break
+						fi
+					done
 					if [ "$ANSWER" == "n" ];
-					then 
+					then
 						break
 					fi
 				else
@@ -71,8 +84,21 @@ do
 				then
 					echo "Группа не существует!" >&2
 					echo "Повторить? (y/n)"
-					read ANSWER
-					if [ "$ANSWER" == "n" ];
+					while [ 1 ];
+					do
+						read ANSWER
+						if [ "$ANSWER" == "n" ];
+						then
+							break
+						elif [ "$ANSWER" != "y" ];
+						then
+							echo "Неверный ввод, повторите"
+							echo "Ввести пользователя? (y/n)"
+						else
+							break
+						fi
+					done
+					if [ "$ANSWER" == "n" ]
 					then
 						break
 					fi
