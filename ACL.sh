@@ -48,81 +48,197 @@ defineRights(){
 options=("Добавить запись" "Удалить запись" "Изменить запись" "Назад")
 select opt in "${options[@]}"
 do
-	case "$opt" in
-		${options[0]})
+	#case "$opt" in
+	case $REPLY in
+		1)
+		while [ 1 ];
+		 do
 			echo " Добавление записи"
 			echo "Пользователь или группа? (u/g)) "
 			read ans
 			case "$ans" in
 				u|U) echo "Введите имя пользователя"
 					read username
-					defineRights
-					setfacl -m u:$username:$rights $filename > /dev/null
-					if [[ $? -eq 0 ]]; then
-                        echo "Success"
-                    else
-                        echo "Loh"
-                    fi
+					grep -i "^$username:" /etc/passwd >/dev/null
+					if [ $? -ne 0 ]; 
+					then
+						echo "Пользователь не существует" 
+						echo "Повторить? (y/n)"
+						read ANSWER
+						if [ "$ANSWER" == "n" ];
+						then 
+							break
+						fi
+					else
+						if [ -f $1 ];
+						 then
+							defineRights
+							setfacl -m u:$username:$rights $filename	
+							echo "Права изменены успешно!"
+							break
+						fi
+					fi			                   
 					;;
 				g|G) echo "Введите имя группы"
 					read groupname
-					defineRights
-					setfacl -m g:$groupname:$right $filename
+					grep -i "^$groupname:" /etc/group >/dev/null
+					if [ $? -ne 0 ]; 
+					then
+						echo "Группа не существует" 
+						echo "Повторить? (y/n)"
+						read ANSWER
+						if [ "$ANSWER" == "n" ];
+						then 
+							break
+						fi
+					else
+						if [ -f $1 ];
+						 then
+							defineRights
+							setfacl -m g:$groupname:$right $filename	
+							echo "Права изменены успешно!"
+							break
+						fi
+					fi	
 					;;
+				
 				*) 
 					echo "Неверный ввод"
 					continue
 					;;
+			
 			esac
-			;;
-		${options[1]})
+			done			
+		;;
+		2)
 			echo "Удаление записи"
-			echo "Пользователь или группа? (u/g)) "
-			read ans
-			case "$ans" in
-				u|U) echo "Введите имя пользователя"
-					read username
-					setfacl -x u:$username $filename
-					;;
-				g|G) echo "Введите имя группы"
-					read groupname
-					setfacl -x g:$groupname $filename
-					;;
-				*)	 echo "Неверный ввод"
-					continue
-					;;
-			esac
-			;;
-		${options[2]})
-			echo "Изменение записи"
+			while [ 1 ];
+			do
 				echo "Пользователь или группа? (u/g)) "
-			read ans
-			case "$ans" in
-				u|U) echo "Введите имя пользователя"
-					read username
-					getfacl $filename
-					defineRights
-					setfacl -m u:$username:$rights $filename
-					;;
-				g|G) echo "Введите имя группы"
-					read groupname
-					getfacl $filename
-					defineRights
-					setfacl -m g:$groupname:$rights $filename
-					;;
-				*) echo "Неверный ввод"
-					continue
-					;;
-			esac
+				read ans
+				case "$ans" in
+					u|U) echo "Введите имя пользователя"
+						read username
+						grep -i "^$username:" /etc/passwd >/dev/null
+						if [ $? -ne 0 ]; 
+						then
+							echo "Пользователь не существует" 
+							echo "Повторить? (y/n)"
+							read ANSWER
+							if [ "$ANSWER" == "n" ];
+							then 
+								break
+							fi
+						else
+							if [ -f $1 ];
+							 then
+							
+								setfacl -x u:$username $filename	
+								echo "Удалено!"
+								break
+							fi
+						fi					
+						;;
+					g|G) echo "Введите имя группы"
+						read groupname
+						grep -i "^$groupname:" /etc/group >/dev/null
+						if [ $? -ne 0 ]; 
+						then
+							echo "Группа не существует" 
+							echo "Повторить? (y/n)"
+							read ANSWER
+							if [ "$ANSWER" == "n" ];
+							then 
+								break
+							fi
+						else
+							if [ -f $1 ];
+							 then
+								setfacl -x g:$groupname $filename
+								echo "Удалено!"
+								break
+							fi
+						fi	
+						;;
+					*)	 echo "Неверный ввод"
+						continue
+						;;
+				esac
+				done
 			;;
-		${options[3]}) 
+		3)
+			echo "Изменение записи"
+			while [ 1 ];
+			do
+				echo "Пользователь или группа? (u/g)) "
+				read ans
+				case "$ans" in
+					u|U) echo "Введите имя пользователя"
+						read username
+						grep -i "^$username:" /etc/passwd >/dev/null
+					        if [ $? -ne 0 ]; 
+					        then
+							echo "Пользователь не существует" 
+							echo "Повторить? (y/n)"
+							read ANSWER
+							if [ "$ANSWER" == "n" ];
+							then 
+								break
+							fi
+					        else
+							if [ -f $1 ];
+						 	then
+								getfacl $filename
+								defineRights
+								setfacl -m u:$username:$rights $filename	
+								echo "Права изменены успешно!"
+								break
+							fi
+					fi	
+						;;
+					g|G) echo "Введите имя группы"
+					     read groupname
+						grep -i "^$groupname:" /etc/group >/dev/null
+						if [ $? -ne 0 ]; 
+						then
+							echo "Группа не существует" 
+							echo "Повторить? (y/n)"
+							read ANSWER
+							if [ "$ANSWER" == "n" ];
+							then 
+								break
+							fi
+						else
+							if [ -f $1 ];
+							 then
+								getfacl $filename
+								defineRights
+								setfacl -m g:$groupname:$right $filename	
+								echo "Права изменены успешно!"
+								break
+							fi
+						fi	
+						;;
+					*) echo "Неверный ввод"
+						continue
+						;;
+				esac
+				done
+			;;
+		4) 
 			break
+			;;
+		"help") 
+			echo "Выберите следующее действие: 
+			1) Добавить запись
+			2) Удалить запись
+			3) Изменить запись
+			4) Назад"
 			;;
 
 		*) echo "Неверный ввод"
 			continue
 			;;
 	esac
-	echo "Done!"
+echo "Done!"
 done
-
